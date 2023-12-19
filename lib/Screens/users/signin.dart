@@ -137,7 +137,7 @@ class _SigninScreenState extends State<SigninScreen> {
                   onPressed: () async {
                     // ... [ElevatedButton's onPressed logic] ...
                     var response = await http.post(
-                      Uri.parse('https://flask-signup.vercel.app//users.signin'),
+                      Uri.parse('https://flask-signup.vercel.app/users.signin'),
                       body: {
                         'phone_number': phoneNumberController.text,
                         'password': passwordController.text,
