@@ -6,13 +6,14 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import './controllers/productcontroller.dart';
-
+import 'dart:convert';
 class AddProductPage extends StatefulWidget {
   @override
   _AddProductPageState createState() => _AddProductPageState();
 }
 
 class _AddProductPageState extends State<AddProductPage> {
+  final _formKey = GlobalKey<FormState>();
 
   final ProductController productController = Get.find();
   bool isRent = false;
@@ -20,10 +21,25 @@ class _AddProductPageState extends State<AddProductPage> {
   String? selectedCondition;
   String productName = '';
   double price = 0.0;
+  File? imageFile;
+
+ Future<void> _pickImage() async {
+  final ImagePicker _picker = ImagePicker();
+
+  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile != null) {
+    setState(() {
+      imageFile = File(pickedFile.path);
+    });
+  } else {
+    // Handle the case where the user cancels the image picking process
+    print("No image selected");
+  }
+}
+
 
   void _submitProduct() async{
-  
-  
 
   // Assuming imageFile is a File object representing the product image
   String imagePath = imageFile!.path; // Use the null assertion operator (!) here
@@ -54,8 +70,10 @@ String base64Image = base64Encode(imageFile!.readAsBytesSync());
 
   // Making HTTP POST request
   var response = await http.post(
-    Uri.parse('http://your-flask-backend-url/add_product'),
-    body: data,
+    Uri.parse('http://flask-signup.vercel.app/add_product'),
+    body: json.encode(data),
+    headers: {'Content-Type': 'application/json'},
+
   );
 
   if (response.statusCode == 200) {
@@ -132,8 +150,8 @@ void _showSubmissionConfirmationDialog(BuildContext context) {
 
   
 
-  final _formKey = GlobalKey<FormState>();
-  File? imageFile;
+  
+  
 
   
 
@@ -449,19 +467,7 @@ void _showSubmissionConfirmationDialog(BuildContext context) {
 
   
 }
-Future<void> _pickImage() async {
 
-  final picker = ImagePicker();
-  final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-  if (pickedFile != null) {
-    
-    File imageFile = File(pickedFile.path);
-    
-  } else {
-    print("Pease enter Product image");
-  }
-}
 
 
     
