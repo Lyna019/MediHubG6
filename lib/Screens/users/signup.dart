@@ -22,7 +22,7 @@ class _SignUpState extends State<SignUp> {
       return;
     }
 
-    const  String apiUrl = 'https://flask-signup.vercel.app//users.signup'; // Ensure correct API endpoint
+    const  String apiUrl = 'https://flask-signup.vercel.app/users.signup'; // Ensure correct API endpoint
 
     final Map<String, dynamic> data = {
       'name': userProfileController.text, // Corrected keys
