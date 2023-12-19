@@ -23,6 +23,22 @@ class _UpdatePersonalInfoPageState extends State<UpdatePersonalInfoPage> {
     // Fetch and set initial data here
     _fetchInitialData();
   }
+  File? imageFile;
+
+ Future<void> _pickImage() async {
+  final ImagePicker _picker = ImagePicker();
+
+  final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+  if (pickedFile != null) {
+    setState(() {
+      imageFile = File(pickedFile.path);
+    });
+  } else {
+    // Handle the case where the user cancels the image picking process
+    print("No image selected");
+  }
+}
 
   // Method to fetch initial data
   void _fetchInitialData() {
@@ -148,19 +164,7 @@ class _UpdatePersonalInfoPageState extends State<UpdatePersonalInfoPage> {
       ],
     );
   }
-  Future<void> _pickImage() async {
-
-  final picker = ImagePicker();
-  final pickedFile = await picker.getImage(source: ImageSource.gallery);
-
-  if (pickedFile != null) {
-    // Do something with the picked image (e.g., upload to a server)
-    File imageFile = File(pickedFile.path);
-    // Call your upload function or save the image path
-  } else {
-    // User canceled the image picking
-  }
-}
+  
 
   Widget _buildSubmitButton(BuildContext context) {
     return ElevatedButton(
