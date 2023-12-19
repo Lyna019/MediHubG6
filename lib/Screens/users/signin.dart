@@ -142,6 +142,7 @@ class _SigninScreenState extends State<SigninScreen> {
                         'phone_number': phoneNumberController.text,
                         'password': passwordController.text,
                       },
+                      headers: {'Content-Type': 'application/json'},
                     );
 
                     if (response.statusCode == 200) {
