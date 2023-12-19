@@ -7,10 +7,6 @@ import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
-
-
-
 class SigninScreen extends StatefulWidget {
   SigninScreen({Key? key}) : super(key: key);
 
@@ -20,6 +16,9 @@ class SigninScreen extends StatefulWidget {
 
 class _SigninScreenState extends State<SigninScreen> {
   final supabase = Supabase.instance.client;
+  final TextEditingController phoneNumberController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -39,7 +38,6 @@ class _SigninScreenState extends State<SigninScreen> {
       }
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -136,51 +134,39 @@ class _SigninScreenState extends State<SigninScreen> {
                 ),
                 SizedBox(height: 22),
                 ElevatedButton(
-  onPressed: () async {
-    // Assuming you have TextEditingController for phone number and password
-    String phoneNumber = phoneNumberController.text;
-    String password = passwordController.text;
+                  onPressed: () async {
+                    // ... [ElevatedButton's onPressed logic] ...
+                    var response = await http.post(
+                      Uri.parse('https://flask-signup.vercel.app//users.signin'),
+                      body: {
+                        'phone_number': phoneNumberController.text,
+                        'password': passwordController.text,
+                      },
+                    );
 
-    // Validate inputs
-    if (phoneNumber.isEmpty || password.isEmpty) {
-      _showSnackBar(context, 'Fields can\'t be empty');
-      return;
-    }
-
-    // Add phone number validation logic if needed
-
-    // Making an HTTP POST request to the backend
-    var response = await http.post(
-      Uri.parse('http://10.0.2.2:5000/users.signin'), // Replace with your actual backend URL
-      body: {
-        'phone_number': phoneNumber,
-        'password': password,
-      },
-    );
-
-    if (response.statusCode == 200) {
-      // Handle successful login
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
-      );
-    } else {
-      _showSnackBar(context, 'Signin failed. Please try again.');
-    }
-  },
-                  child:Text(
-              'Sign Up',
-              style: TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
+                    if (response.statusCode == 200) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    } else {
+                      _showSnackBar(context, 'Signin failed. Please try again.');
+                    }
+                  },
+                  child: Text(
+                    'Sign In',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xe52f8dfb),
                     minimumSize: Size(double.infinity, 48),
-                    shape: RoundedRectangleBorder( borderRadius: BorderRadius.circular(30)),
-
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
                   ),
                 ),
                 SizedBox(height: 10),
@@ -213,7 +199,13 @@ class _SigninScreenState extends State<SigninScreen> {
                   Buttons.Google,
                   text: "Continue with Google",
                   onPressed: () {
-                  _googleSignIn();
+                    Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ),
+                );
+                  
                   },
                 ),
               ),
@@ -269,43 +261,4 @@ Align(
   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 }
 
-Future<AuthResponse> _googleSignIn() async {
-    /// TODO: update the Web client ID with your own.
-    ///
-    /// Web Client ID that you registered with Google Cloud.
-    const webClientId = '235504955269-2e13it3hb9fv0sse0lk0denqj71i9cqm.apps.googleusercontent.com';
-    const iosClientId = '235504955269-79eup1rptd533fk72i67pcmhdp4niko4.apps.googleusercontent.com';
-
-
-   
-
-    
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-    clientId: iosClientId,
-    serverClientId: webClientId,
-  );
-  final googleUser = await googleSignIn.signIn();
-  final googleAuth = await googleUser!.authentication;
-  final accessToken = googleAuth.accessToken;
-  final idToken = googleAuth.idToken;
-
-  if (accessToken == null) {
-    throw 'No Access Token found.';
-  }
-  if (idToken == null) {
-    throw 'No ID Token found.';
-  }
-
-  // Correct the provider reference based on your package or implementation
-  return supabase.auth.signInWithIdToken(
-    provider: Provider.google, // This is a placeholder. Replace with the correct reference.
-    idToken: idToken,
-    accessToken: accessToken,
-  );
 }
-
-
-
-} 
-
-
